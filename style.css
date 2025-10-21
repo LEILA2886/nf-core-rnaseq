@@ -1,0 +1,30 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=56
+#SBATCH --time=36:00:00
+#SBATCH --partition=compute
+#SBATCH --account=mcellrna1-54t0ka2oggw-DEFAULT-CPU
+#SBATCH --output=job_output_%j.out
+#SBATCH --error=job_error_%j.err
+
+module load anaconda3
+
+# Set Singularity cache directory
+export NXF_SINGULARITY_CACHEDIR=/home/leila.rafiq/luster/scratch/mcellrna1-54t0ka2oggw/users/leila.rafiq/singularity_cache
+
+# Set Nextflow work directory
+export NXF_WORK=/home/leila.rafiq/luster/scratch/mcellrna1-54t0ka2oggw/users/leila.rafiq/nextflow_work
+
+# Make sure the directories exist
+mkdir -p $NXF_SINGULARITY_CACHEDIR
+mkdir -p $NXF_WORK
+
+# Run Nextflow pipeline with Singularity
+nextflow run run nf-core/rnaseq -r 3.18.0 \
+    -w $NXF_WORK \
+    -c nf_config_fix.config \
+    --input /home/leila.rafiq/lustre/mcellrna1-54t0ka2oggw/users/leila.rafiq/data/samplesheet.csv \
+    --fasta /home/leila.rafiq/lustre/mcellrna1-54t0ka2oggw/users/leila.rafiq/hisat2/Mus_musculus.GRCm3.dna.primary_assembly.fa \
+    --gtf /home/leila.rafiq/lustre/mcellrna1-54t0ka2oggw/users/leila.rafiq/Mus_musculus.GRCm39.113.gtf \
+    --outdir /home/leila.rafiq/lustre/mcellrna1-54t0ka2oggw/users/leila.rafiq/nfcore_rnaseq_output \
+    -profile singularity
