@@ -1,0 +1,23 @@
+// SLURM EXECUTOR
+process.executor = 'slurm'
+
+// FIX the tmp.txt overwrite issue: REMOVE '-C'
+process{
+    shell = [
+        "bash",
+        "-e",
+        "-u",
+        "-o",
+        "pipefail"
+    ]
+
+
+    withName: 'NFCORE_RNASEQ:QUANTIFY_FEATURECOUNTS' {
+    extends.args = '-M -O --fraction' // Count multi-mapping reads, allow overlapping features
+    }
+}
+
+
+// SINGULARITY SETTINGS
+singularity.enabled = true
+singularity.autoMounts = true
